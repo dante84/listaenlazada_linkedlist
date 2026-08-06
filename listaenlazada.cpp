@@ -12,6 +12,7 @@ struct Nodo {
 auto crealista(Nodo *&nodo, int nodos, Nodo *head) -> Nodo *;
 void imprimelista(Nodo *nodo);
 void borramemoria(Nodo *nodo);
+void agreganodo(Nodo *inicio, Nodo *nodoagregar);
 
 auto crealista(Nodo *&nodo, int nodos, Nodo *head) -> Nodo * {
 
@@ -53,6 +54,20 @@ void borramemoria(Nodo *nodo) {
   }
 }
 
+void agreganodo(Nodo *nodo, Nodo *nodoagregar) {
+
+  // Nodo *nodosig = nodo->siguiente;
+  if (nodo->siguiente == nullptr) {
+
+    nodoagregar->valor = nodo->valor + 1;
+    nodo->siguiente = nodoagregar;
+
+    return;
+  } else {
+    agreganodo(nodo->siguiente, nodoagregar);
+  }
+}
+
 auto main(int argc, char *argv[]) -> int {
 
   const int NODOS = 5;
@@ -63,6 +78,12 @@ auto main(int argc, char *argv[]) -> int {
   head->valor = 0;
 
   Nodo *head2 = crealista(head, NODOS, head);
+
+  imprimelista(head2);
+
+  Nodo *nodoagregar = new Nodo;
+
+  agreganodo(head2, nodoagregar);
 
   imprimelista(head2);
 
