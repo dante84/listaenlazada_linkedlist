@@ -12,7 +12,8 @@ struct Nodo {
 auto crealista(Nodo *&nodo, int nodos, Nodo *head) -> Nodo *;
 void imprimelista(Nodo *nodo);
 void borramemoria(Nodo *nodo);
-void agreganodo(Nodo *inicio, Nodo *nodoagregar);
+void agreganodo(Nodo *nodo, Nodo *nodoagregar);
+void remuevenodo(Nodo *nodo, Nodo **anterior, int valorremover);
 
 auto crealista(Nodo *&nodo, int nodos, Nodo *head) -> Nodo * {
 
@@ -57,14 +58,49 @@ void borramemoria(Nodo *nodo) {
 void agreganodo(Nodo *nodo, Nodo *nodoagregar) {
 
   // Nodo *nodosig = nodo->siguiente;
-  if (nodo->siguiente == nullptr) {
+  if (!(nodo->siguiente == nullptr)) {
 
+    agreganodo(nodo->siguiente, nodoagregar);
+  } else {
     nodoagregar->valor = nodo->valor + 1;
     nodo->siguiente = nodoagregar;
 
     return;
+  }
+}
+
+void removernodo(Nodo *nodo, Nodo **anterior, int valorremover) {
+
+  cout << "En removernodo" << "\n";
+
+  if (nodo->valor != valorremover) {
+    if (nodo->siguiente == nullptr) {
+      return;
+    }
+
+    if (nodo->eshead) {
+
+      removernodo(nodo->siguiente, anterior, valorremover);
+    } else {
+      if ((*anterior)->siguiente == nodo) {
+
+        removernodo(nodo->siguiente, anterior, valorremover);
+      } else {
+        (*anterior)->siguiente->siguiente = nodo;
+
+        removernodo(nodo->siguiente, anterior, valorremover);
+      }
+    }
+
   } else {
-    agreganodo(nodo->siguiente, nodoagregar);
+
+    if (nodo->eshead) {
+      nodo->siguiente->eshead = true;
+    }
+    (*anterior)->siguiente = nodo->siguiente;
+    delete nodo;
+    nodo = nullptr;
+    return;
   }
 }
 
@@ -72,25 +108,30 @@ auto main(int argc, char *argv[]) -> int {
 
   const int NODOS = 5;
 
-  cout << "hola termux" << "\n";
-
   Nodo *head = new Nodo;
   head->valor = 0;
+  head->eshead = true;
 
-  Nodo *head2 = crealista(head, NODOS, head);
+  head = crealista(head, NODOS, head);
 
-  imprimelista(head2);
+  imprimelista(head);
 
   Nodo *nodoagregar = new Nodo;
 
-  agreganodo(head2, nodoagregar);
+  agreganodo(head, nodoagregar);
 
-  imprimelista(head2);
+  imprimelista(head);
 
-  borramemoria(head2);
+  Nodo **anterior = new Nodo *(head);
 
-  // delete head2;
-  // head2 = nullptr;
+  removernodo(head, anterior, 3);
+
+  imprimelista(head);
+
+  borramemoria(head);
+
+  delete anterior;
+  anterior = nullptr;
 
   return 0;
 }
