@@ -13,7 +13,7 @@ auto crealista(Nodo *&nodo, int nodos, Nodo *head) -> Nodo *;
 void imprimelista(Nodo *nodo);
 void borramemoria(Nodo *nodo);
 void agreganodo(Nodo *nodo, Nodo *nodoagregar);
-void remuevenodo(Nodo *nodo, Nodo **anterior, int valorremover);
+void remuevenodo(Nodo *nodo, int valorremover);
 
 auto crealista(Nodo *&nodo, int nodos, Nodo *head) -> Nodo * {
 
@@ -69,44 +69,38 @@ void agreganodo(Nodo *nodo, Nodo *nodoagregar) {
   }
 }
 
-void removernodo(Nodo *nodo, Nodo **anterior, int valorremover) {
+void removernodo(Nodo *nodo, int valorremover) {
 
-  cout << "En removernodo" << "\n";
+  if (nodo->siguiente == nullptr) {
+    return;
+  }
 
   if (nodo->valor != valorremover) {
-    if (nodo->siguiente == nullptr) {
-      return;
-    }
+    if (nodo->siguiente->valor == valorremover) {
+      Nodo *temp = nodo->siguiente->siguiente;
+      delete nodo->siguiente;
+      nodo->siguiente = nullptr;
+      nodo->siguiente = temp;
 
-    if (nodo->eshead) {
-
-      removernodo(nodo->siguiente, anterior, valorremover);
     } else {
-      if ((*anterior)->siguiente == nodo) {
-
-        removernodo(nodo->siguiente, anterior, valorremover);
-      } else {
-        (*anterior)->siguiente->siguiente = nodo;
-
-        removernodo(nodo->siguiente, anterior, valorremover);
-      }
+      removernodo(nodo->siguiente, valorremover);
     }
-
   } else {
 
     if (nodo->eshead) {
       nodo->siguiente->eshead = true;
+      delete nodo;
+      nodo = nullptr;
     }
-    (*anterior)->siguiente = nodo->siguiente;
-    delete nodo;
-    nodo = nullptr;
+
     return;
   }
 }
 
 auto main(int argc, char *argv[]) -> int {
 
-  const int NODOS = 5;
+  const int NODOS = 50;
+  const int NUMERO_REMOVER = 34;
 
   Nodo *head = new Nodo;
   head->valor = 0;
@@ -122,16 +116,11 @@ auto main(int argc, char *argv[]) -> int {
 
   imprimelista(head);
 
-  Nodo **anterior = new Nodo *(head);
-
-  removernodo(head, anterior, 3);
+  removernodo(head, NUMERO_REMOVER);
 
   imprimelista(head);
 
   borramemoria(head);
-
-  delete anterior;
-  anterior = nullptr;
 
   return 0;
 }
